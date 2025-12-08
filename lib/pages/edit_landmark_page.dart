@@ -147,7 +147,10 @@ class _EditLandmarkPageState extends State<EditLandmarkPage> {
       _showError('Latitude and longitude must be valid numbers');
       return;
     }
-
+if (!_isEditing && _selectedImage == null) {
+      _showError('An image is required for new landmarks.');
+      return; 
+    }
     setState(() => _loading = true);
 
     try {

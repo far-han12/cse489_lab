@@ -10,7 +10,7 @@ class OverviewPage extends StatefulWidget {
   final ApiService apiService;
   final VoidCallback onUpdated;
   final VoidCallback onDeleted;
-  final bool isDarkMode; // <--- Receives global setting
+  final bool isDarkMode;
 
   const OverviewPage({
     super.key,
@@ -30,7 +30,6 @@ class _OverviewPageState extends State<OverviewPage> {
   
   static const _bangladeshCenter = LatLng(23.6850, 90.3563);
 
-  // Custom Night Mode JSON
   static const String _darkMapStyle = '''
 [
   {
@@ -183,7 +182,6 @@ class _OverviewPageState extends State<OverviewPage> {
     super.dispose();
   }
 
-  // Detect when the parent changes the 'isDarkMode' property
   @override
   void didUpdateWidget(OverviewPage oldWidget) {
     super.didUpdateWidget(oldWidget);
@@ -196,7 +194,7 @@ class _OverviewPageState extends State<OverviewPage> {
     if (widget.isDarkMode) {
       _controller?.setMapStyle(_darkMapStyle);
     } else {
-      _controller?.setMapStyle('[]'); // Standard light mode
+      _controller?.setMapStyle('[]');
     }
   }
 
@@ -359,7 +357,6 @@ class _OverviewPageState extends State<OverviewPage> {
       markers: _buildMarkers(),
       onMapCreated: (controller) {
         _controller = controller;
-        // Apply initial style based on current global theme
         _applyMapStyle();
       },
       myLocationEnabled: true,
