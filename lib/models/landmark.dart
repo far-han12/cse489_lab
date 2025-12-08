@@ -13,18 +13,15 @@ class Landmark {
     required this.imageUrl,
   });
 
-  // Turn the raw "image" value from API into a full URL (if possible)
   static String _resolveImageUrl(String? raw) {
     if (raw == null || raw.isEmpty) return '';
 
-    // If server already gives full URL, just use it
     if (raw.startsWith('http://') || raw.startsWith('https://')) {
       return raw;
     }
 
-    // Otherwise assume a relative path like "uploads/abc.jpg"
     const base = 'https://labs.anontech.info/cse489/t3/';
-    final cleaned = raw.replaceFirst(RegExp(r'^/'), ''); // remove leading /
+    final cleaned = raw.replaceFirst(RegExp(r'^/'), ''); 
     return '$base$cleaned';
   }
 

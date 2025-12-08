@@ -75,7 +75,6 @@ class _EditLandmarkPageState extends State<EditLandmarkPage> {
       _latController.text = pos.latitude.toString();
       _lonController.text = pos.longitude.toString();
     } catch (_) {
-      // if fails, user can type manually
     }
   }
 
@@ -87,7 +86,6 @@ class _EditLandmarkPageState extends State<EditLandmarkPage> {
         final bytes = await picked.readAsBytes();
         final decoded = img.decodeImage(bytes);
         if (decoded != null) {
-          // Resize to 800x600 immediately
           final resized = img.copyResize(decoded, width: 800, height: 600);
           final jpeg = img.encodeJpg(resized, quality: 85);
           final tmp = File(
@@ -96,11 +94,9 @@ class _EditLandmarkPageState extends State<EditLandmarkPage> {
           await tmp.writeAsBytes(jpeg);
           setState(() => _selectedImage = tmp);
         } else {
-          // fallback
           setState(() => _selectedImage = File(picked.path));
         }
       } catch (e) {
-        // fallback
         setState(() => _selectedImage = File(picked.path));
       }
     }
@@ -177,7 +173,6 @@ class _EditLandmarkPageState extends State<EditLandmarkPage> {
       if (mounted && Navigator.canPop(context)) {
         Navigator.of(context).pop();
       } else {
-        // Reset form if we are on the main tab
         _titleController.clear();
         _latController.clear();
         _lonController.clear();
@@ -196,13 +191,11 @@ class _EditLandmarkPageState extends State<EditLandmarkPage> {
   Widget build(BuildContext context) {
     final pageTitle = _isEditing ? 'Edit Landmark' : 'New Landmark';
     
-    // Theme colors
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final boxColor = isDark ? Colors.grey[850]! : Colors.grey[200]!;
     final borderColor = isDark ? Colors.grey[700]! : Colors.grey[400]!;
     final iconColor = isDark ? Colors.grey[500] : Colors.grey[600];
 
-    // Helper logic to see if we have ANY image to show
     final bool hasLocalImage = _selectedImage != null;
     final bool hasNetworkImage = _isEditing && widget.existing!.imageUrl.isNotEmpty;
     final bool showPlaceholder = !hasLocalImage && !hasNetworkImage;
@@ -276,7 +269,6 @@ class _EditLandmarkPageState extends State<EditLandmarkPage> {
                   ),
                   const SizedBox(height: 24),
                   
-                  // --- 1. THE IMAGE DISPLAY BOX (Preview Only) ---
                   GestureDetector(
                     onTap: () {
                       if (hasLocalImage) {
@@ -284,7 +276,6 @@ class _EditLandmarkPageState extends State<EditLandmarkPage> {
                       } else if (hasNetworkImage) {
                          _showImagePreview(isFile: false);
                       }
-                      // If placeholder, tapping does nothing (use button below)
                     },
                     child: Container(
                       width: double.infinity,
@@ -338,7 +329,6 @@ class _EditLandmarkPageState extends State<EditLandmarkPage> {
                     ),
                   ),
 
-                  // --- 2. THE BUTTON (Under the box) ---
                   const SizedBox(height: 12),
                   Center(
                     child: SizedBox(
@@ -360,7 +350,6 @@ class _EditLandmarkPageState extends State<EditLandmarkPage> {
                       ),
                     ),
                   ),
-                  // Optional reset text if they picked a new image in edit mode
                   if (_isEditing && hasLocalImage) 
                     TextButton(
                       onPressed: () => setState(() => _selectedImage = null),

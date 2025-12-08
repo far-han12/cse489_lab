@@ -24,8 +24,7 @@ class _LandmarkAppState extends State<LandmarkApp> {
   final GlobalKey<ScaffoldMessengerState> _scaffoldMessengerKey =
       GlobalKey<ScaffoldMessengerState>();
 
-  // Global Theme State
-  bool _isDarkMode = true;
+  bool _isDarkMode = false;
 
   int _currentIndex = 0;
   bool _loading = false;
