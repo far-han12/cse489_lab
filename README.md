@@ -1,17 +1,59 @@
-# lab_mid
+# Bangladesh Landmarks
 
-A new Flutter project.
+## App Summary
+**Bangladesh Landmarks** is a Flutter-based Android application designed to manage and visualize geographical landmark records. The app communicates with a remote REST service to fetch, create, update, and delete landmark data. It features a modern tabbed interface that allows users to view landmarks on an interactive Google Map, browse them in a list format, and add new entries with automatic GPS detection and image handling.
 
-## Getting Started
+The application includes robust offline capabilities, caching data locally using SQLite so users can view landmarks even without an internet connection.
 
-This project is a starting point for a Flutter application.
+## Feature List
 
-A few resources to get you started if this is your first Flutter project:
+### 🗺️ Map & Visualization
+* **Interactive Map:** Google Maps integration centered on Bangladesh (23.6850°N, 90.3563°E).
+* **Custom Markers:** Landmarks appear as color-coded markers (hues generated dynamically based on ID).
+* **Dark Mode Support:** Includes a custom night-mode map style and a global app theme toggle (Light/Dark).
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+### 📍 Landmark Management
+* **CRUD Operations:** Full support to **C**reate, **R**ead, **U**pdate, and **D**elete landmarks.
+* **Auto-GPS Detection:** Automatically detects and fills the user's current Latitude and Longitude when creating a new entry.
+* **Image Optimization:** Automatically resizes selected images to **800x600** resolution before uploading to ensure fast performance and server compliance.
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
-# cse489_lab
+### 💾 Offline Support
+* **Local Caching:** Uses `sqflite` to store fetched landmarks locally.
+* **Offline Mode:** Automatically falls back to the local database if the network request fails, displaying a banner to indicate offline status.
+
+## Setup Instructions
+
+1.  **Prerequisites**
+    * Flutter SDK installed (Version 3.0.0 or higher recommended).
+    * Android Studio or VS Code configured for Flutter development.
+    * An active internet connection for the initial data fetch.
+
+2.  **Installation**
+    * Extract the project files to your local machine.
+    * Open the project folder in your terminal or IDE.
+    * Install dependencies:
+        ```bash
+        flutter pub get
+        ```
+
+3.  **Configuration**
+    * Open `android/app/src/main/AndroidManifest.xml`.
+    * Ensure the Google Maps API Key is correctly placed in the `meta-data` tag:
+        ```xml
+        <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:value="YOUR_API_KEY_HERE" />
+        ```
+
+4.  **Running the App**
+    * Connect an Android device or start an emulator.
+    * Run the command:
+        ```bash
+        flutter run
+        ```
+
+## Known Limitations
+
+* **Image Updates via API:** Due to backend limitations with standard `PUT` requests for multipart data, updating a landmark *with a new image* is handled by creating a new entry and deleting the old one automatically.
+* **Offline Mode is Read-Only:** While users can view cached landmarks offline, creating, updating, or deleting records requires an active internet connection.
+* **Map Markers:** If a large number of landmarks are loaded , map rendering performance may vary depending on the device's hardware.
