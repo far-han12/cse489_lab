@@ -31,6 +31,8 @@ class RecordsPage extends StatelessWidget {
     );
   }
 
+
+
   Future<void> _delete(BuildContext context, Landmark lm) async {
     final confirm = await showDialog<bool>(
       context: context,

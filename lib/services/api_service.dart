@@ -22,7 +22,6 @@ class ApiService {
     }
   }
 
-  /// Resize image to 800x600 and return bytes
   Future<Uint8List> _resizeImage(File file) async {
     final bytes = await file.readAsBytes();
     final img.Image? original = img.decodeImage(bytes);
@@ -83,11 +82,9 @@ if (imageFile != null) {
     File? imageFile,
   }) async {
     
-    // 1. If we have an image, we cannot use PUT. 
-    // We must Create a new entry and Delete the old one.
+ 
     if (imageFile != null) {
       try {
-        // Step A: Create the new landmark with the new image
         await createLandmark(
           title: title, 
           lat: lat, 
@@ -95,16 +92,15 @@ if (imageFile != null) {
           imageFile: imageFile
         );
 
-        // Step B: If Step A worked, delete the old landmark
         await deleteLandmark(id);
         
-        return; // Stop here, we are done.
+        return;
       } catch (e) {
         throw Exception('Failed to update image (Workaround failed): $e');
       }
     }
 
-    // 2. If NO image, we use the standard PUT request (Text only updates work fine)
+
     final uri = Uri.parse(baseUrl);
     final response = await http.put(
       uri,
@@ -121,7 +117,6 @@ if (imageFile != null) {
       throw Exception('Failed to update landmark: ${response.body}');
     }
   }
-  /// DELETE (DELETE)
   Future<void> deleteLandmark(int id) async {
     final uri = Uri.parse('$baseUrl?id=$id');
     final response = await http.delete(uri);

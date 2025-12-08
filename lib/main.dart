@@ -109,13 +109,12 @@ class _LandmarkAppState extends State<LandmarkApp> {
   @override
   Widget build(BuildContext context) {
     final tabs = [
-      // Pass the global theme state to the map page
       OverviewPage(
         landmarks: _landmarks,
         apiService: _api,
         onUpdated: _onLandmarkUpdated,
         onDeleted: _onLandmarkDeleted,
-        isDarkMode: _isDarkMode, // <--- Added this parameter
+        isDarkMode: _isDarkMode,
       ),
       RecordsPage(
         landmarks: _landmarks,
@@ -130,7 +129,6 @@ class _LandmarkAppState extends State<LandmarkApp> {
       scaffoldMessengerKey: _scaffoldMessengerKey,
       debugShowCheckedModeBanner: false,
       title: 'Bangladesh Landmarks',
-      // Define Light Theme
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(
           seedColor: Colors.teal,
@@ -138,7 +136,7 @@ class _LandmarkAppState extends State<LandmarkApp> {
         ),
         useMaterial3: true,
       ),
-      // Define Dark Theme
+      
       darkTheme: ThemeData(
         colorScheme: ColorScheme.fromSeed(
           seedColor: Colors.teal,
@@ -146,17 +144,14 @@ class _LandmarkAppState extends State<LandmarkApp> {
         ),
         useMaterial3: true,
       ),
-      // Switch theme based on boolean
       themeMode: _isDarkMode ? ThemeMode.dark : ThemeMode.light,
       
       home: Scaffold(
         appBar: AppBar(
           title: const Text('Bangladesh Landmarks'),
           actions: [
-            // Theme Toggle Icon
             IconButton(
-              // Show Sun icon if currently Dark (to switch to Light)
-              // Show Moon icon if currently Light (to switch to Dark)
+            
               icon: Icon(_isDarkMode ? Icons.light_mode : Icons.dark_mode),
               onPressed: () {
                 setState(() {

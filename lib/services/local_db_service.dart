@@ -35,7 +35,6 @@ class LocalDbService {
     return _db!;
   }
 
-  /// Replace all rows with latest list
   Future<void> saveLandmarks(List<Landmark> items) async {
     final db = await _database;
     final batch = db.batch();
