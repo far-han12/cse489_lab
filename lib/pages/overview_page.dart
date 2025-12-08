@@ -347,21 +347,56 @@ class _OverviewPageState extends State<OverviewPage> {
     }
   }
 
-  @override
+ @override
   Widget build(BuildContext context) {
-    return GoogleMap(
-      initialCameraPosition: const CameraPosition(
-        target: _bangladeshCenter,
-        zoom: 6.5,
-      ),
-      markers: _buildMarkers(),
-      onMapCreated: (controller) {
-        _controller = controller;
-        _applyMapStyle();
-      },
-      myLocationEnabled: true,
-      myLocationButtonEnabled: true,
-      zoomControlsEnabled: false,
+    return Stack(
+      children: [
+        GoogleMap(
+          initialCameraPosition: const CameraPosition(
+            target: _bangladeshCenter,
+            zoom: 6.5,
+          ),
+          markers: _buildMarkers(),
+          onMapCreated: (controller) {
+            _controller = controller;
+            _applyMapStyle();
+          },
+          myLocationEnabled: true,
+          myLocationButtonEnabled: true,
+          zoomControlsEnabled: false, 
+        ),
+
+        Positioned(
+          bottom: 24,
+          right: 16,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              FloatingActionButton.small(
+                heroTag: "zoom_in", 
+                onPressed: () {
+                  _controller?.animateCamera(CameraUpdate.zoomIn());
+                },
+                backgroundColor: Theme.of(context).colorScheme.primaryContainer,
+                foregroundColor: Theme.of(context).colorScheme.onPrimaryContainer,
+                tooltip: 'Zoom In',
+                child: const Icon(Icons.add),
+              ),
+              const SizedBox(height: 12),
+              FloatingActionButton.small(
+                heroTag: "zoom_out",
+                onPressed: () {
+                  _controller?.animateCamera(CameraUpdate.zoomOut());
+                },
+                backgroundColor: Theme.of(context).colorScheme.primaryContainer,
+                foregroundColor: Theme.of(context).colorScheme.onPrimaryContainer,
+                tooltip: 'Zoom Out',
+                child: const Icon(Icons.remove),
+              ),
+            ],
+          ),
+        ),
+      ],
     );
   }
 }
