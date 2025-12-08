@@ -177,13 +177,25 @@ class _LandmarkAppState extends State<LandmarkApp> {
             if (_loading) const Center(child: CircularProgressIndicator()),
           ],
         ),
-        bottomNavigationBar: BottomNavigationBar(
-          currentIndex: _currentIndex,
-          onTap: (index) => setState(() => _currentIndex = index),
-          items: const [
-            BottomNavigationBarItem(icon: Icon(Icons.map), label: 'Overview'),
-            BottomNavigationBarItem(icon: Icon(Icons.list), label: 'Records'),
-            BottomNavigationBarItem(icon: Icon(Icons.add), label: 'New Entry'),
+        bottomNavigationBar: NavigationBar(
+          selectedIndex: _currentIndex,
+          onDestinationSelected: (index) => setState(() => _currentIndex = index),
+          destinations: const [
+            NavigationDestination(
+              icon: Icon(Icons.map_outlined),
+              selectedIcon: Icon(Icons.map), 
+              label: 'Overview',
+            ),
+            NavigationDestination(
+              icon: Icon(Icons.list_outlined),
+              selectedIcon: Icon(Icons.list),
+              label: 'Records',
+            ),
+            NavigationDestination(
+              icon: Icon(Icons.add_circle_outline),
+              selectedIcon: Icon(Icons.add_circle),
+              label: 'New Entry',
+            ),
           ],
         ),
       ),
