@@ -7,6 +7,8 @@ import 'pages/overview_page.dart';
 import 'pages/records_page.dart';
 import 'pages/edit_landmark_page.dart';
 
+import 'utils/app_theme.dart'; 
+
 void main() {
   runApp(const LandmarkApp());
 }
@@ -24,7 +26,7 @@ class _LandmarkAppState extends State<LandmarkApp> {
   final GlobalKey<ScaffoldMessengerState> _scaffoldMessengerKey =
       GlobalKey<ScaffoldMessengerState>();
 
-  bool _isDarkMode = false;
+  bool _isDarkMode = false; 
 
   int _currentIndex = 0;
   bool _loading = false;
@@ -129,21 +131,10 @@ class _LandmarkAppState extends State<LandmarkApp> {
       scaffoldMessengerKey: _scaffoldMessengerKey,
       debugShowCheckedModeBanner: false,
       title: 'Bangladesh Landmarks',
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(
-          seedColor: Colors.teal,
-          brightness: Brightness.light,
-        ),
-        useMaterial3: true,
-      ),
       
-      darkTheme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(
-          seedColor: Colors.teal,
-          brightness: Brightness.dark,
-        ),
-        useMaterial3: true,
-      ),
+      theme: AppTheme.lightTheme,
+      darkTheme: AppTheme.darkTheme,
+      
       themeMode: _isDarkMode ? ThemeMode.dark : ThemeMode.light,
       
       home: Scaffold(
@@ -151,7 +142,6 @@ class _LandmarkAppState extends State<LandmarkApp> {
           title: const Text('Bangladesh Landmarks'),
           actions: [
             IconButton(
-            
               icon: Icon(_isDarkMode ? Icons.light_mode : Icons.dark_mode),
               onPressed: () {
                 setState(() {

@@ -5,11 +5,11 @@ import 'dart:typed_data';
 import 'package:http/http.dart' as http;
 import 'package:http_parser/http_parser.dart' as http_parser;
 import 'package:image/image.dart' as img;
-
+import '../utils/constants.dart';
 import '../models/landmark.dart';
 
 class ApiService {
-  static const String baseUrl = 'https://labs.anontech.info/cse489/t3/api.php';
+ static const String baseUrl = AppConstants.baseUrl;
 
   Future<List<Landmark>> getLandmarks() async {
     final response = await http.get(Uri.parse(baseUrl));
