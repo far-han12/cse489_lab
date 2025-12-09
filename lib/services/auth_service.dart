@@ -20,7 +20,7 @@ class AuthService {
 
       return (await _auth.signInWithCredential(credential)).user;
     } catch (e) {
-      print("Login Error: $e");
+     
       return null;
     }
   }

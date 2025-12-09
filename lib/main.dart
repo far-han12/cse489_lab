@@ -11,12 +11,11 @@ import 'pages/edit_landmark_page.dart';
 import 'pages/login_page.dart'; // The login screen we created
 import 'utils/app_theme.dart';
 
-// Global Theme Controller
 final ValueNotifier<ThemeMode> themeNotifier = ValueNotifier(ThemeMode.light);
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp(); // Initialize Firebase
+  await Firebase.initializeApp(); 
   runApp(const LandmarkApp());
 }
 
@@ -34,21 +33,17 @@ class LandmarkApp extends StatelessWidget {
           theme: AppTheme.lightTheme,
           darkTheme: AppTheme.darkTheme,
           themeMode: currentMode,
-          // AUTH GATE: Checks if user is logged in
           home: StreamBuilder(
             stream: AuthService().authStateChanges,
             builder: (context, snapshot) {
-              // 1. Loading state (checking auth)
               if (snapshot.connectionState == ConnectionState.waiting) {
                 return const Scaffold(
                   body: Center(child: CircularProgressIndicator()),
                 );
               }
-              // 2. User is Logged In -> Show Main Dashboard
               if (snapshot.hasData) {
                 return const LandmarkDashboard();
               }
-              // 3. User is Logged Out -> Show Login Page
               return const LoginPage();
             },
           ),
@@ -58,7 +53,6 @@ class LandmarkApp extends StatelessWidget {
   }
 }
 
-// This was your original "_LandmarkAppState", now renamed to Dashboard
 class LandmarkDashboard extends StatefulWidget {
   const LandmarkDashboard({super.key});
 
@@ -159,7 +153,6 @@ class _LandmarkDashboardState extends State<LandmarkDashboard> {
 
   @override
   Widget build(BuildContext context) {
-    // Check current theme mode for the toggle button icon
     final isDarkMode = themeNotifier.value == ThemeMode.dark;
 
     final tabs = [

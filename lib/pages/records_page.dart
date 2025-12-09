@@ -31,8 +31,6 @@ class RecordsPage extends StatelessWidget {
     );
   }
 
-
-
   Future<void> _delete(BuildContext context, Landmark lm) async {
     final confirm = await showDialog<bool>(
       context: context,
@@ -58,6 +56,9 @@ class RecordsPage extends StatelessWidget {
       await apiService.deleteLandmark(lm.id);
       onDeleted();
     } catch (e) {
+      // FIX: Check if the widget is still mounted before using context
+      if (!context.mounted) return;
+      
       showDialog(
         context: context,
         builder: (_) => AlertDialog(
