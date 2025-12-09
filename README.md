@@ -1,6 +1,4 @@
 # Bangladesh Landmarks
-## 📱 Download Demo
-You can download the latest compiled APK to test the application on your Android device:
 
 ## App Summary
 **Bangladesh Landmarks** is a Flutter-based Android application designed to manage and visualize geographical landmark records. The app communicates with a remote REST service to fetch, create, update, and delete landmark data. It features a modern tabbed interface that allows users to view landmarks on an interactive Google Map, browse them in a list format, and add new entries with automatic GPS detection and image handling.
