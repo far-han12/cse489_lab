@@ -3,9 +3,14 @@
 ## App Summary
 **Bangladesh Landmarks** is a Flutter-based Android application designed to manage and visualize geographical landmark records. The app communicates with a remote REST service to fetch, create, update, and delete landmark data. It features a modern tabbed interface that allows users to view landmarks on an interactive Google Map, browse them in a list format, and add new entries with automatic GPS detection and image handling.
 
-The application includes robust offline capabilities, caching data locally using SQLite so users can view landmarks even without an internet connection.
+The application includes robust offline capabilities, caching data locally using SQLite, and is secured via Google Authentication, ensuring only verified users can access the dashboard.
 
 ## Feature List
+
+### 🔐 Authentication & Security (New!)
+* **Google Sign-In:** Secure, one-tap login using Firebase Authentication.
+* **Auth Gate:** The app automatically directs users to the Login screen if they are signed out and protects the main dashboard from unauthorized access.
+* **Persistent Session:** Users remain logged in across app restarts until they explicitly log out.
 
 ### 🗺️ Map & Visualization
 * **Interactive Map:** Google Maps integration centered on Bangladesh (23.6850°N, 90.3563°E).
@@ -28,7 +33,13 @@ The application includes robust offline capabilities, caching data locally using
     * Android Studio or VS Code configured for Flutter development.
     * An active internet connection for the initial data fetch.
 
-2.  **Installation**
+2.  **Firebase Configuration (Critical Step)**
+    * **Register App:** Create a project in the [Firebase Console](https://console.firebase.google.com/) and register an Android app using the package name (e.g., `com.example.lab_mid`).
+    * **SHA-1 Key:** You **must** generate your machine's SHA-1 key (run `gradlew signingReport` in the `android` folder) and add it to the Firebase Project Settings. Without this, Google Sign-In will fail.
+    * **Config File:** Download the `google-services.json` file from Firebase and place it in:
+        `android/app/google-services.json`
+
+3.  **Installation**
     * Extract the project files to your local machine.
     * Open the project folder in your terminal or IDE.
     * Install dependencies:
@@ -36,7 +47,7 @@ The application includes robust offline capabilities, caching data locally using
         flutter pub get
         ```
 
-3.  **Configuration**
+4.  **Configuration**
     * Open `android/app/src/main/AndroidManifest.xml`.
     * Ensure the Google Maps API Key is correctly placed in the `meta-data` tag:
         ```xml
@@ -45,7 +56,7 @@ The application includes robust offline capabilities, caching data locally using
             android:value="YOUR_API_KEY_HERE" />
         ```
 
-4.  **Running the App**
+5.  **Running the App**
     * Connect an Android device or start an emulator.
     * Run the command:
         ```bash
@@ -56,4 +67,5 @@ The application includes robust offline capabilities, caching data locally using
 
 * **Image Updates via API:** Due to backend limitations with standard `PUT` requests for multipart data, updating a landmark *with a new image* is handled by creating a new entry and deleting the old one automatically.
 * **Offline Mode is Read-Only:** While users can view cached landmarks offline, creating, updating, or deleting records requires an active internet connection.
-* **Map Markers:** If a large number of landmarks are loaded , map rendering performance may vary depending on the device's hardware.
+* **Google Login:** Authentication requires an active internet connection; users cannot sign in while offline.
+* **Map Markers:** If a large number of landmarks are loaded, map rendering performance may vary depending on the device's hardware.
