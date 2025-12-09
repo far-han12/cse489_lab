@@ -64,8 +64,7 @@ class _LandmarkDashboardState extends State<LandmarkDashboard> {
   final ApiService _api = ApiService();
   final LocalDbService _localDb = LocalDbService();
   final AuthService _auth = AuthService();
-  final GlobalKey<ScaffoldMessengerState> _scaffoldMessengerKey =
-      GlobalKey<ScaffoldMessengerState>();
+
 
   int _currentIndex = 0;
   bool _loading = false;
@@ -130,10 +129,12 @@ class _LandmarkDashboardState extends State<LandmarkDashboard> {
     );
   }
 
-  void _showSnack(String message) {
-    final messenger = _scaffoldMessengerKey.currentState;
-    messenger?.clearSnackBars();
-    messenger?.showSnackBar(SnackBar(content: Text(message)));
+void _showSnack(String message) {
+    if (!mounted) return; 
+    ScaffoldMessenger.of(context).clearSnackBars();
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text(message)),
+    );
   }
 
   void _onLandmarkCreated() async {
@@ -173,11 +174,10 @@ class _LandmarkDashboardState extends State<LandmarkDashboard> {
     ];
 
     return Scaffold(
-      key: _scaffoldMessengerKey, 
+ 
       appBar: AppBar(
         title: const Text('Bangladesh Landmarks'),
         actions: [
-          // THEME TOGGLE
           IconButton(
             icon: Icon(isDarkMode ? Icons.light_mode : Icons.dark_mode),
             onPressed: () {
