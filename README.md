@@ -22,7 +22,7 @@ The application includes robust offline capabilities, caching data locally using
 * **Auto-GPS Detection:** Automatically detects and fills the user's current Latitude and Longitude when creating a new entry.
 * **Image Optimization:** Automatically resizes selected images to **800x600** resolution before uploading to ensure fast performance and server compliance.
 
-### 💾 Offline Support (Bonus Part) 
+### 💾 Offline Support (Bonus Part)
 * **Local Caching:** Uses `sqflite` to store fetched landmarks locally.
 * **Offline Mode:** Automatically falls back to the local database if the network request fails, displaying a banner to indicate offline status.
 
@@ -47,14 +47,13 @@ The application includes robust offline capabilities, caching data locally using
         flutter pub get
         ```
 
-4.  **Configuration**
-    * Open `android/app/src/main/AndroidManifest.xml`.
-    * Ensure the Google Maps API Key is correctly placed in the `meta-data` tag:
-        ```xml
-        <meta-data
-            android:name="com.google.android.geo.API_KEY"
-            android:value="YOUR_API_KEY_HERE" />
+4.  **Google Maps Configuration (Secure Key)**
+    * Open the `local.properties` file located in the `android/` directory.
+    * Add your Google Maps API Key in the following format:
+        ```properties
+        GOOGLE_MAPS_API_KEY=YOUR_GOOGLE_MAPS_API_KEY_HERE
         ```
+    * The app is configured to automatically inject this key into the `AndroidManifest.xml` during the build process.
 
 5.  **Running the App**
     * Connect an Android device or start an emulator.
