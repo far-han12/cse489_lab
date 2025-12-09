@@ -52,7 +52,7 @@ The application includes robust offline capabilities, caching data locally using
         ```
 
 4.  **Google Maps Configuration (Secure Key)**
-    * Open the `local.properties` file located in the `android/` directory.
+    * Create the `local.properties` file in the location `android/` directory.
     * Add your Google Maps API Key in the following format:
         ```properties
         GOOGLE_MAPS_API_KEY=YOUR_GOOGLE_MAPS_API_KEY_HERE
