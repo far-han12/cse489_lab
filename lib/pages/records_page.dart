@@ -56,7 +56,6 @@ class RecordsPage extends StatelessWidget {
       await apiService.deleteLandmark(lm.id);
       onDeleted();
     } catch (e) {
-      // FIX: Check if the widget is still mounted before using context
       if (!context.mounted) return;
       
       showDialog(

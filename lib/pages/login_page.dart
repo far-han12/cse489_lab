@@ -64,13 +64,11 @@ class _LoginPageState extends State<LoginPage> {
             color: textColor,
             tooltip: "Switch Theme",
             onPressed: () {
-              // Access the global notifier from main.dart
               themeNotifier.value = isDark ? ThemeMode.light : ThemeMode.dark;
             },
           ),
         ],
       ),
-      // Use extendBodyBehindAppBar so the content stays centered nicely
       extendBodyBehindAppBar: true,
       body: SafeArea(
         child: Center(
@@ -79,25 +77,23 @@ class _LoginPageState extends State<LoginPage> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                // 1. Animated Logo Container
                 Hero(
                   tag: 'app_logo',
                   child: Container(
                     padding: const EdgeInsets.all(24),
                     decoration: BoxDecoration(
-                      color: logoBgColor, // Updated color logic
+                      color: logoBgColor, 
                       shape: BoxShape.circle,
                     ),
                     child: Icon(
                       Icons.map_rounded,
                       size: 80,
-                      color: logoColor, // Updated color logic
+                      color: logoColor, 
                     ),
                   ),
                 ),
                 const SizedBox(height: 32),
 
-                // 2. Welcome Text
                 Text(
                   "Welcome Back!",
                   style: TextStyle(
@@ -117,7 +113,6 @@ class _LoginPageState extends State<LoginPage> {
                 ),
                 const SizedBox(height: 48),
 
-                // 3. Interactive Sign-In Button
                 _isLoading
                     ? const CircularProgressIndicator()
                     : SizedBox(
@@ -154,7 +149,6 @@ class _LoginPageState extends State<LoginPage> {
 
                 const SizedBox(height: 24),
 
-                // 4. Footer info
                 Text(
                   "By continuing, you agree to our Terms & Privacy Policy",
                   textAlign: TextAlign.center,

@@ -4,11 +4,11 @@ import 'package:firebase_core/firebase_core.dart';
 import 'models/landmark.dart';
 import 'services/api_service.dart';
 import 'services/local_db_service.dart';
-import 'services/auth_service.dart'; // Handles Google Sign In
+import 'services/auth_service.dart';
 import 'pages/overview_page.dart';
 import 'pages/records_page.dart';
 import 'pages/edit_landmark_page.dart';
-import 'pages/login_page.dart'; // The login screen we created
+import 'pages/login_page.dart'; 
 import 'utils/app_theme.dart';
 
 final ValueNotifier<ThemeMode> themeNotifier = ValueNotifier(ThemeMode.light);
@@ -173,7 +173,7 @@ class _LandmarkDashboardState extends State<LandmarkDashboard> {
     ];
 
     return Scaffold(
-      key: _scaffoldMessengerKey, // Ensure snackbars show here
+      key: _scaffoldMessengerKey, 
       appBar: AppBar(
         title: const Text('Bangladesh Landmarks'),
         actions: [
@@ -185,13 +185,11 @@ class _LandmarkDashboardState extends State<LandmarkDashboard> {
                   isDarkMode ? ThemeMode.light : ThemeMode.dark;
             },
           ),
-          // LOGOUT BUTTON
           IconButton(
             icon: const Icon(Icons.logout),
             tooltip: "Logout",
             onPressed: () async {
               await _auth.signOut();
-              // The StreamBuilder in LandmarkApp will handle redirecting to Login
             },
           ),
         ],

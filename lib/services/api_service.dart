@@ -34,7 +34,6 @@ class ApiService {
               }
             } catch (e) {
               debugPrint('Skipped invalid landmark at index $i: $e');
-              // continue with next
             }
           }
           if (out.isEmpty) {
@@ -45,7 +44,6 @@ class ApiService {
           throw Exception('Unexpected JSON structure (not a List)');
         }
       } catch (e) {
-        // Include a short snippet of the response body to help debugging
         final snippet = response.body.length > 300
             ? response.body.substring(0, 300)
             : response.body;
