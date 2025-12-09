@@ -7,7 +7,7 @@ The application includes robust offline capabilities, caching data locally using
 
 ## Feature List
 
-### 🔐 Authentication & Security (New!)
+### 🔐 Authentication & Security (Bonus Part)
 * **Google Sign-In:** Secure, one-tap login using Firebase Authentication.
 * **Auth Gate:** The app automatically directs users to the Login screen if they are signed out and protects the main dashboard from unauthorized access.
 * **Persistent Session:** Users remain logged in across app restarts until they explicitly log out.
@@ -22,7 +22,7 @@ The application includes robust offline capabilities, caching data locally using
 * **Auto-GPS Detection:** Automatically detects and fills the user's current Latitude and Longitude when creating a new entry.
 * **Image Optimization:** Automatically resizes selected images to **800x600** resolution before uploading to ensure fast performance and server compliance.
 
-### 💾 Offline Support
+### 💾 Offline Support (Bonus Part) 
 * **Local Caching:** Uses `sqflite` to store fetched landmarks locally.
 * **Offline Mode:** Automatically falls back to the local database if the network request fails, displaying a banner to indicate offline status.
 
