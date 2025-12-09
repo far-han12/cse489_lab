@@ -30,6 +30,7 @@ class _OverviewPageState extends State<OverviewPage> {
   
   static const _bangladeshCenter = LatLng(23.6850, 90.3563);
 
+  // UPDATED: Changed administrative.country color to a light gray (#9e9e9e)
   static const String _darkMapStyle = '''
 [
   {
@@ -53,6 +54,18 @@ class _OverviewPageState extends State<OverviewPage> {
     "stylers": [
       {
         "color": "#242f3e"
+      }
+    ]
+  },
+  {
+    "featureType": "administrative.country",
+    "elementType": "geometry.stroke",
+    "stylers": [
+      {
+        "color": "#9e9e9e"
+      },
+      {
+        "weight": 1.5
       }
     ]
   },

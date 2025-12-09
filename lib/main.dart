@@ -1,32 +1,77 @@
 import 'package:flutter/material.dart';
+import 'package:firebase_core/firebase_core.dart';
 
 import 'models/landmark.dart';
 import 'services/api_service.dart';
 import 'services/local_db_service.dart';
+import 'services/auth_service.dart'; // Handles Google Sign In
 import 'pages/overview_page.dart';
 import 'pages/records_page.dart';
 import 'pages/edit_landmark_page.dart';
+import 'pages/login_page.dart'; // The login screen we created
+import 'utils/app_theme.dart';
 
-import 'utils/app_theme.dart'; 
+// Global Theme Controller
+final ValueNotifier<ThemeMode> themeNotifier = ValueNotifier(ThemeMode.light);
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(); // Initialize Firebase
   runApp(const LandmarkApp());
 }
 
-class LandmarkApp extends StatefulWidget {
+class LandmarkApp extends StatelessWidget {
   const LandmarkApp({super.key});
 
   @override
-  State<LandmarkApp> createState() => _LandmarkAppState();
+  Widget build(BuildContext context) {
+    return ValueListenableBuilder<ThemeMode>(
+      valueListenable: themeNotifier,
+      builder: (context, currentMode, _) {
+        return MaterialApp(
+          debugShowCheckedModeBanner: false,
+          title: 'Bangladesh Landmarks',
+          theme: AppTheme.lightTheme,
+          darkTheme: AppTheme.darkTheme,
+          themeMode: currentMode,
+          // AUTH GATE: Checks if user is logged in
+          home: StreamBuilder(
+            stream: AuthService().authStateChanges,
+            builder: (context, snapshot) {
+              // 1. Loading state (checking auth)
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return const Scaffold(
+                  body: Center(child: CircularProgressIndicator()),
+                );
+              }
+              // 2. User is Logged In -> Show Main Dashboard
+              if (snapshot.hasData) {
+                return const LandmarkDashboard();
+              }
+              // 3. User is Logged Out -> Show Login Page
+              return const LoginPage();
+            },
+          ),
+        );
+      },
+    );
+  }
 }
 
-class _LandmarkAppState extends State<LandmarkApp> {
+// This was your original "_LandmarkAppState", now renamed to Dashboard
+class LandmarkDashboard extends StatefulWidget {
+  const LandmarkDashboard({super.key});
+
+  @override
+  State<LandmarkDashboard> createState() => _LandmarkDashboardState();
+}
+
+class _LandmarkDashboardState extends State<LandmarkDashboard> {
   final ApiService _api = ApiService();
   final LocalDbService _localDb = LocalDbService();
+  final AuthService _auth = AuthService();
   final GlobalKey<ScaffoldMessengerState> _scaffoldMessengerKey =
       GlobalKey<ScaffoldMessengerState>();
-
-  bool _isDarkMode = false; 
 
   int _currentIndex = 0;
   bool _loading = false;
@@ -60,7 +105,11 @@ class _LandmarkAppState extends State<LandmarkApp> {
           _landmarks = cached;
           _offline = true;
         });
-        _showSnack('Offline – showing cached landmarks');
+        final reason = e.toString();
+        debugPrint('Failed to fetch landmarks: $reason');
+        final short =
+            reason.length > 140 ? '${reason.substring(0, 140)}…' : reason;
+        _showSnack('Offline – showing cached landmarks. Reason: $short');
       } else {
         _showErrorDialog('Failed to load landmarks and no cached data.\n$e');
       }
@@ -110,13 +159,16 @@ class _LandmarkAppState extends State<LandmarkApp> {
 
   @override
   Widget build(BuildContext context) {
+    // Check current theme mode for the toggle button icon
+    final isDarkMode = themeNotifier.value == ThemeMode.dark;
+
     final tabs = [
       OverviewPage(
         landmarks: _landmarks,
         apiService: _api,
         onUpdated: _onLandmarkUpdated,
         onDeleted: _onLandmarkDeleted,
-        isDarkMode: _isDarkMode,
+        isDarkMode: isDarkMode,
       ),
       RecordsPage(
         landmarks: _landmarks,
@@ -127,77 +179,76 @@ class _LandmarkAppState extends State<LandmarkApp> {
       EditLandmarkPage(apiService: _api, onSaved: _onLandmarkCreated),
     ];
 
-    return MaterialApp(
-      scaffoldMessengerKey: _scaffoldMessengerKey,
-      debugShowCheckedModeBanner: false,
-      title: 'Bangladesh Landmarks',
-      
-      theme: AppTheme.lightTheme,
-      darkTheme: AppTheme.darkTheme,
-      
-      themeMode: _isDarkMode ? ThemeMode.dark : ThemeMode.light,
-      
-      home: Scaffold(
-        appBar: AppBar(
-          title: const Text('Bangladesh Landmarks'),
-          actions: [
-            IconButton(
-              icon: Icon(_isDarkMode ? Icons.light_mode : Icons.dark_mode),
-              onPressed: () {
-                setState(() {
-                  _isDarkMode = !_isDarkMode;
-                });
-              },
-            ),
-          ],
-        ),
-        body: Stack(
-          children: [
-            Positioned.fill(child: tabs[_currentIndex]),
-            if (_offline)
-              Positioned(
-                top: 0,
-                left: 0,
-                right: 0,
-                child: Container(
-                  color: Colors.amber.shade800,
-                  padding: const EdgeInsets.symmetric(
-                    vertical: 4,
-                    horizontal: 12,
-                  ),
-                  child: const SafeArea(
-                    bottom: false,
-                    child: Text(
-                      'Offline mode – showing cached landmarks',
-                      style: TextStyle(fontSize: 13),
-                    ),
+    return Scaffold(
+      key: _scaffoldMessengerKey, // Ensure snackbars show here
+      appBar: AppBar(
+        title: const Text('Bangladesh Landmarks'),
+        actions: [
+          // THEME TOGGLE
+          IconButton(
+            icon: Icon(isDarkMode ? Icons.light_mode : Icons.dark_mode),
+            onPressed: () {
+              themeNotifier.value =
+                  isDarkMode ? ThemeMode.light : ThemeMode.dark;
+            },
+          ),
+          // LOGOUT BUTTON
+          IconButton(
+            icon: const Icon(Icons.logout),
+            tooltip: "Logout",
+            onPressed: () async {
+              await _auth.signOut();
+              // The StreamBuilder in LandmarkApp will handle redirecting to Login
+            },
+          ),
+        ],
+      ),
+      body: Stack(
+        children: [
+          Positioned.fill(child: tabs[_currentIndex]),
+          if (_offline)
+            Positioned(
+              top: 0,
+              left: 0,
+              right: 0,
+              child: Container(
+                color: Colors.amber.shade800,
+                padding: const EdgeInsets.symmetric(
+                  vertical: 4,
+                  horizontal: 12,
+                ),
+                child: const SafeArea(
+                  bottom: false,
+                  child: Text(
+                    'Offline mode – showing cached landmarks',
+                    style: TextStyle(fontSize: 13),
                   ),
                 ),
               ),
-            if (_loading) const Center(child: CircularProgressIndicator()),
-          ],
-        ),
-        bottomNavigationBar: NavigationBar(
-          selectedIndex: _currentIndex,
-          onDestinationSelected: (index) => setState(() => _currentIndex = index),
-          destinations: const [
-            NavigationDestination(
-              icon: Icon(Icons.map_outlined),
-              selectedIcon: Icon(Icons.map), 
-              label: 'Overview',
             ),
-            NavigationDestination(
-              icon: Icon(Icons.list_outlined),
-              selectedIcon: Icon(Icons.list),
-              label: 'Records',
-            ),
-            NavigationDestination(
-              icon: Icon(Icons.add_circle_outline),
-              selectedIcon: Icon(Icons.add_circle),
-              label: 'New Entry',
-            ),
-          ],
-        ),
+          if (_loading) const Center(child: CircularProgressIndicator()),
+        ],
+      ),
+      bottomNavigationBar: NavigationBar(
+        selectedIndex: _currentIndex,
+        onDestinationSelected: (index) => setState(() => _currentIndex = index),
+        destinations: const [
+          NavigationDestination(
+            icon: Icon(Icons.map_outlined),
+            selectedIcon: Icon(Icons.map),
+            label: 'Overview',
+          ),
+          NavigationDestination(
+            icon: Icon(Icons.list_outlined),
+            selectedIcon: Icon(Icons.list),
+            label: 'Records',
+          ),
+          NavigationDestination(
+            icon: Icon(Icons.add_circle_outline),
+            selectedIcon: Icon(Icons.add_circle),
+            label: 'New Entry',
+          ),
+        ],
       ),
     );
   }

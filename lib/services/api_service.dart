@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
+import 'package:flutter/foundation.dart';
 
 import 'package:http/http.dart' as http;
 import 'package:http_parser/http_parser.dart' as http_parser;
@@ -9,16 +10,57 @@ import '../utils/constants.dart';
 import '../models/landmark.dart';
 
 class ApiService {
- static const String baseUrl = AppConstants.baseUrl;
+  static const String baseUrl = AppConstants.baseUrl;
 
   Future<List<Landmark>> getLandmarks() async {
-    final response = await http.get(Uri.parse(baseUrl));
+    final uri = Uri.parse(baseUrl);
+    final response = await http.get(uri).timeout(const Duration(seconds: 10));
 
     if (response.statusCode == 200) {
-      final List<dynamic> data = jsonDecode(response.body);
-      return data.map((e) => Landmark.fromJson(e)).toList();
+      try {
+        final decoded = jsonDecode(response.body);
+        if (decoded is List) {
+          final List<Landmark> out = [];
+          for (var i = 0; i < decoded.length; i++) {
+            final item = decoded[i];
+            try {
+              if (item is Map<String, dynamic>) {
+                out.add(Landmark.fromJson(item));
+              } else if (item is Map) {
+                out.add(Landmark.fromJson(Map<String, dynamic>.from(item)));
+              } else {
+                debugPrint(
+                  'Skipped landmark: unexpected item type at index $i: ${item.runtimeType}',
+                );
+              }
+            } catch (e) {
+              debugPrint('Skipped invalid landmark at index $i: $e');
+              // continue with next
+            }
+          }
+          if (out.isEmpty) {
+            throw Exception('No valid landmarks parsed from response');
+          }
+          return out;
+        } else {
+          throw Exception('Unexpected JSON structure (not a List)');
+        }
+      } catch (e) {
+        // Include a short snippet of the response body to help debugging
+        final snippet = response.body.length > 300
+            ? response.body.substring(0, 300)
+            : response.body;
+        throw Exception(
+          'Failed to parse landmarks JSON: $e\nResponse snippet: $snippet',
+        );
+      }
     } else {
-      throw Exception('Failed to load landmarks (code ${response.statusCode})');
+      final snippet = response.body.length > 300
+          ? response.body.substring(0, 300)
+          : response.body;
+      throw Exception(
+        'Failed to load landmarks (HTTP ${response.statusCode}). Response snippet: $snippet',
+      );
     }
   }
 
@@ -28,39 +70,35 @@ class ApiService {
     if (original == null) {
       throw Exception('Unable to decode image');
     }
-    final img.Image resized =
-        img.copyResize(original, width: 800, height: 600);
+    final img.Image resized = img.copyResize(original, width: 800, height: 600);
     final resizedBytes = img.encodeJpg(resized, quality: 85);
     return Uint8List.fromList(resizedBytes);
   }
-
 
   Future<int> createLandmark({
     required String title,
     required double lat,
     required double lon,
-  File? imageFile,
+    File? imageFile,
   }) async {
-final uri = Uri.parse(baseUrl);
-final request = http.MultipartRequest('POST', uri);
+    final uri = Uri.parse(baseUrl);
+    final request = http.MultipartRequest('POST', uri);
 
-request.fields['title'] = title;
-request.fields['lat'] = lat.toString();
-request.fields['lon'] = lon.toString();
+    request.fields['title'] = title;
+    request.fields['lat'] = lat.toString();
+    request.fields['lon'] = lon.toString();
 
-
-if (imageFile != null) {
-  final resizedBytes = await _resizeImage(imageFile);
-  request.files.add(
-    http.MultipartFile.fromBytes(
-      'image',
-      resizedBytes,
-      filename: 'image.jpg',
-      contentType: http_parser.MediaType('image', 'jpeg'),
-    ),
-  );
-}
-
+    if (imageFile != null) {
+      final resizedBytes = await _resizeImage(imageFile);
+      request.files.add(
+        http.MultipartFile.fromBytes(
+          'image',
+          resizedBytes,
+          filename: 'image.jpg',
+          contentType: http_parser.MediaType('image', 'jpeg'),
+        ),
+      );
+    }
 
     final streamed = await request.send();
     final response = await http.Response.fromStream(streamed);
@@ -73,7 +111,6 @@ if (imageFile != null) {
     }
   }
 
-
   Future<void> updateLandmark({
     required int id,
     required String title,
@@ -81,25 +118,22 @@ if (imageFile != null) {
     required double lon,
     File? imageFile,
   }) async {
-    
- 
     if (imageFile != null) {
       try {
         await createLandmark(
-          title: title, 
-          lat: lat, 
-          lon: lon, 
-          imageFile: imageFile
+          title: title,
+          lat: lat,
+          lon: lon,
+          imageFile: imageFile,
         );
 
         await deleteLandmark(id);
-        
+
         return;
       } catch (e) {
         throw Exception('Failed to update image (Workaround failed): $e');
       }
     }
-
 
     final uri = Uri.parse(baseUrl);
     final response = await http.put(
@@ -117,6 +151,7 @@ if (imageFile != null) {
       throw Exception('Failed to update landmark: ${response.body}');
     }
   }
+
   Future<void> deleteLandmark(int id) async {
     final uri = Uri.parse('$baseUrl?id=$id');
     final response = await http.delete(uri);

@@ -21,16 +21,39 @@ class Landmark {
     }
 
     const base = 'https://labs.anontech.info/cse489/t3/';
-    final cleaned = raw.replaceFirst(RegExp(r'^/'), ''); 
+    final cleaned = raw.replaceFirst(RegExp(r'^/'), '');
     return '$base$cleaned';
+  }
+
+  static double _parseDoubleField(dynamic value, String fieldName) {
+    if (value == null) {
+      throw FormatException('Missing $fieldName');
+    }
+
+    if (value is num) return value.toDouble();
+
+    var s = value.toString().trim();
+    if (s.isEmpty) throw FormatException('Empty $fieldName');
+
+    // Replace common comma decimal separator with dot
+    s = s.replaceAll(',', '.');
+
+    // Extract first numeric-looking token (handles trailing characters)
+    final match = RegExp(r'[-+]?\d*\.?\d+(?:[eE][-+]?\d+)?').firstMatch(s);
+    if (match == null) throw FormatException('Invalid $fieldName: $s');
+
+    final token = match.group(0)!;
+    final parsed = double.tryParse(token);
+    if (parsed == null) throw FormatException('Invalid $fieldName: $s');
+    return parsed;
   }
 
   factory Landmark.fromJson(Map<String, dynamic> json) {
     return Landmark(
       id: int.parse(json['id'].toString()),
       title: json['title'] ?? '',
-      lat: double.parse(json['lat'].toString()),
-      lon: double.parse(json['lon'].toString()),
+      lat: _parseDoubleField(json['lat'], 'lat'),
+      lon: _parseDoubleField(json['lon'], 'lon'),
       imageUrl: _resolveImageUrl(json['image'] as String?),
     );
   }
